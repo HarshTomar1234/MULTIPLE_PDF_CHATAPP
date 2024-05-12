@@ -50,7 +50,7 @@ def get_conversation_chain(vectorscore):
         llm=llm,
         retriever=vectorscore.as_retriever(),
         memory=memory
-    )p
+    )
     return conversation_chain
 
 
