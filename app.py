@@ -17,7 +17,7 @@ def get_pdf_text(pdf_docs):
         # PdfReader object is used to read the contents of a PDF file. Here's a basic example of how you can use it:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
-            text = page.extract_text()   # Extracts all the raw text from the pdf
+            text += page.extract_text()   # Extracts all the raw text from the pdf
 
     return text
 
@@ -50,21 +50,24 @@ def get_conversation_chain(vectorscore):
         llm=llm,
         retriever=vectorscore.as_retriever(),
         memory=memory
-    )
+    )p
     return conversation_chain
 
 
 def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
+    if st.session_state.conversation is not None:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
 
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
+        for i, message in enumerate(st.session_state.chat_history):
+            if i % 2 == 0:
+                st.write(user_template.replace(
+                    "{{MSG}}", message.content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace(
+                    "{{MSG}}", message.content), unsafe_allow_html=True)
+    else:
+        st.error("Conversation chain is not initialized. Please upload PDFs and click 'Process' first.")
 
 
 def main():
@@ -114,3 +117,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
